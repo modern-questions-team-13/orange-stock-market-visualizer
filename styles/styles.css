@@ -2,8 +2,8 @@
     height: 200px;
 }
 
-#mainCanvas {
-    /*width: 800px !important;*/
-    /*height: 300px !important;*/
+canvas {
+    width: 700px !important;
+    height: 300px !important;
     border: 1px solid black;
 }

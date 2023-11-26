@@ -1,4 +1,5 @@
 let chart;
+let chart2;
 let curr_comp = "none";
 
 function removeAllData() {
@@ -27,71 +28,73 @@ function addData(label, newData) {
     chart.update();
 }
 
-function getCompanies(){
+async function getCompanies() {
     //replace with fetch
-    const companies = { "CompanyList": ["First", "Second", "Max Loh", "AnotherTest"] }
+    const companies = (await (await fetch('http://localhost:8080/companies')).json())
 
     let selection = document.getElementById('CompanyList');
-    for (let comp of companies.CompanyList){
-        selection.innerHTML+="<option value='"+comp.replace(/\s/g, '')+"'>"+comp+"</option>";
+    selection.innerHTML = "<option value=\"\" selected disabled hidden>Please choose company</option>\n"
+    for (let comp of companies) {
+        selection.innerHTML += "<option value='" + comp.id + "'>" + comp.name + "</option>";
     }
 
 }
 
-setInterval(function refresh(){
-    changeChart(curr_comp);
-},5000);
+setInterval(async function refresh() {
+    await changeChart(curr_comp)
+}, 5000);
 
-function changeChart(company) {
+async function changeChart(company) {
     //replace with fetch
-    const data_pool = {
-        "First": [{time: "11:40", price: 100}, {time: "11:45", price: 95}, {time: "11:50", price: 103}, {time: "11:55", price:107}],
-        "Second": [{time: "11:40", price: 55}, {time: "11:45", price: 65}, {time: "11:50", price: 75}, {time: "11:55", price:70}],
-        "MaxLoh": [{time: "11:40", price: 1}, {time: "11:45", price: 5}, {time: "11:50", price: 3}, {time: "11:55", price:0}],
-        "AnotherTest": [{time: "11:40", price: 24}, {time: "11:45", price: 10}, {time: "11:50", price: 50}, {time: "11:55", price: 12}]
+    curr_comp = company;
+
+    let jsonData = (await (await fetch('http://localhost:8080/companies/' + company + '/0/10')).json())
+    let jsonData2 = (await (await fetch('http://localhost:8080/companies/' + company + '/1/10')).json())
+
+    let prices = []
+    let datetimes = []
+    for (const entry of jsonData) {
+        prices.push(entry['price'])
+        datetimes.push(new Date(entry['datetime']).toLocaleString())
     }
-    console.log(company);
-    curr_comp=company;
-    if(company=="First"){
-        newChart(data_pool.First);
+    newChart(chart, datetimes, prices)
+
+    prices = []
+    datetimes = []
+
+    for (const entry of jsonData2) {
+        prices.push(entry['price'])
+        datetimes.push(new Date(entry['datetime']).toLocaleString())
     }
-    else if(company=="Second"){
-        newChart(data_pool.Second);
-    }
-    else if(company=="MaxLoh"){
-        newChart(data_pool.MaxLoh);
-    }
-    else{
-        newChart(data_pool.AnotherTest);
-    }
+
+    newChart(chart2, datetimes, prices)
 }
-function newChart(data){
+
+function newChart(chart, labels, data) {
     chart = new Chart(
-        document.getElementById('mainCanvas'),
+        chart.ctx,
         {
             responsive: true,
             maintainAspectRatio: false,
             type: 'line',
             data: {
-                labels: data.map(row => row.time),
+                labels: labels,
                 datasets: [
                     {
-                        label: 'Buy price for period',
-                        data: data.map(row => row.price)
+                        lineTension: 0,
+                        label: chart.data.datasets[0].label,
+                        data: data,
+                        backgroundColor: chart.data.datasets[0].backgroundColor,
                     }
                 ]
             }
         }
     );
 }
+
 function initChart() {
     getCompanies();
-    const data = [
-        {time: "11:40", price: 100},
-        {time: "11:45", price: 95},
-        {time: "11:50", price: 103},
-        {time: "11:50", price:107}
-    ];
+    const data = [];
 
     chart = new Chart(
         document.getElementById('mainCanvas'),
@@ -103,8 +106,30 @@ function initChart() {
                 labels: data.map(row => row.time),
                 datasets: [
                     {
+                        lineTension: 0,
                         label: 'Buy price for period',
-                        data: data.map(row => row.price)
+                        data: data.map(row => row.price),
+                        backgroundColor: 'rgba(130,255,112,0.68)',
+                    }
+                ]
+            }
+        }
+    );
+    chart2 = new Chart(
+        document.getElementById('mainCanvas2'),
+        {
+            responsive: true,
+            maintainAspectRatio: false,
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        lineTension: 0,
+                        label: 'Sell price for period',
+                        data: [],
+                        backgroundColor: 'rgba(255,0,0,0.56)',
+
                     }
                 ]
             }

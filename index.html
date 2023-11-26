@@ -9,12 +9,14 @@
 </head>
 <body onload="initChart()">
 <div id=SelectionDiv>
-    <select id="CompanyList", onchange="setInterval(changeChart(value),5000);">
+    <select id="CompanyList", onchange="changeChart(value)">
         <option value="" selected disabled hidden>Please choose company</option>
     </select>
 </div>
 <div id=canvasDiv>
     <canvas id="mainCanvas">
+    </canvas>
+    <canvas id="mainCanvas2">
     </canvas>
 </div>
 
