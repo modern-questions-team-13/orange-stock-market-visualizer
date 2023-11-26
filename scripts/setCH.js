@@ -1,4 +1,5 @@
 let chart;
+let curr_comp = "none";
 
 function removeAllData() {
     while (chart.data.labels.length > 0)
@@ -26,15 +27,70 @@ function addData(label, newData) {
     chart.update();
 }
 
+function getCompanies(){
+    //replace with fetch
+    const companies = { "CompanyList": ["First", "Second", "Max Loh", "AnotherTest"] }
+
+    let selection = document.getElementById('CompanyList');
+    for (let comp of companies.CompanyList){
+        selection.innerHTML+="<option value='"+comp.replace(/\s/g, '')+"'>"+comp+"</option>";
+    }
+
+}
+
+setInterval(function refresh(){
+    changeChart(curr_comp);
+},5000);
+
+function changeChart(company) {
+    //replace with fetch
+    const data_pool = {
+        "First": [{time: "11:40", price: 100}, {time: "11:45", price: 95}, {time: "11:50", price: 103}, {time: "11:55", price:107}],
+        "Second": [{time: "11:40", price: 55}, {time: "11:45", price: 65}, {time: "11:50", price: 75}, {time: "11:55", price:70}],
+        "MaxLoh": [{time: "11:40", price: 1}, {time: "11:45", price: 5}, {time: "11:50", price: 3}, {time: "11:55", price:0}],
+        "AnotherTest": [{time: "11:40", price: 24}, {time: "11:45", price: 10}, {time: "11:50", price: 50}, {time: "11:55", price: 12}]
+    }
+    console.log(company);
+    curr_comp=company;
+    if(company=="First"){
+        newChart(data_pool.First);
+    }
+    else if(company=="Second"){
+        newChart(data_pool.Second);
+    }
+    else if(company=="MaxLoh"){
+        newChart(data_pool.MaxLoh);
+    }
+    else{
+        newChart(data_pool.AnotherTest);
+    }
+}
+function newChart(data){
+    chart = new Chart(
+        document.getElementById('mainCanvas'),
+        {
+            responsive: true,
+            maintainAspectRatio: false,
+            type: 'line',
+            data: {
+                labels: data.map(row => row.time),
+                datasets: [
+                    {
+                        label: 'Buy price for period',
+                        data: data.map(row => row.price)
+                    }
+                ]
+            }
+        }
+    );
+}
 function initChart() {
+    getCompanies();
     const data = [
-        {year: 2010, count: 10},
-        {year: 2011, count: 20},
-        {year: 2012, count: 15},
-        {year: 2013, count: 25},
-        {year: 2014, count: 22},
-        {year: 2015, count: 30},
-        {year: 2016, count: 28},
+        {time: "11:40", price: 100},
+        {time: "11:45", price: 95},
+        {time: "11:50", price: 103},
+        {time: "11:50", price:107}
     ];
 
     chart = new Chart(
@@ -44,11 +100,11 @@ function initChart() {
             maintainAspectRatio: false,
             type: 'line',
             data: {
-                labels: data.map(row => row.year),
+                labels: data.map(row => row.time),
                 datasets: [
                     {
-                        label: 'Acquisitions by year',
-                        data: data.map(row => row.count)
+                        label: 'Buy price for period',
+                        data: data.map(row => row.price)
                     }
                 ]
             }

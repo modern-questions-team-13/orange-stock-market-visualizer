@@ -8,7 +8,11 @@
     <script src="scripts/setCH.js"></script>
 </head>
 <body onload="initChart()">
-
+<div id=SelectionDiv>
+    <select id="CompanyList", onchange="setInterval(changeChart(value),5000);">
+        <option value="" selected disabled hidden>Please choose company</option>
+    </select>
+</div>
 <div id=canvasDiv>
     <canvas id="mainCanvas">
     </canvas>
