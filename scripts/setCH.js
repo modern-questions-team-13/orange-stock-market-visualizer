@@ -30,7 +30,7 @@ function addData(label, newData) {
 
 async function getCompanies() {
     //replace with fetch
-    const companies = (await (await fetch('http://localhost:8080/companies')).json())
+    const companies = (await (await fetch('http://localhost:9000/companies')).json())
 
     let selection = document.getElementById('CompanyList');
     selection.innerHTML = "<option value=\"\" selected disabled hidden>Please choose company</option>\n"
@@ -48,8 +48,8 @@ async function changeChart(company) {
     //replace with fetch
     curr_comp = company;
 
-    let jsonData = (await (await fetch('http://localhost:8080/companies/' + company + '/0/10')).json())
-    let jsonData2 = (await (await fetch('http://localhost:8080/companies/' + company + '/1/10')).json())
+    let jsonData = (await (await fetch('http://localhost:8080/companies/' + curr_comp + '/0/50')).json())
+    let jsonData2 = (await (await fetch('http://localhost:8080/companies/' + curr_comp + '/1/50')).json())
 
     let prices = []
     let datetimes = []
